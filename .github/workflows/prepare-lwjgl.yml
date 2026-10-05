@@ -1,0 +1,46 @@
+name: Prepare Minecraft LWJGL
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    if: "!contains(github.event.head_commit.message, '[lwjgl]')"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download LWJGL runtime files
+        run: |
+          mkdir -p lwjgl libraries
+
+          curl -L --fail --retry 3 -o lwjgl/lwjgl-2.9.3.jar \
+            https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/lwjgl-2.9.3.jar
+
+          curl -L --fail --retry 3 -o lwjgl/lwjgl_util-2.9.3.jar \
+            https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/lwjgl_util-2.9.3.jar
+
+          curl -L --fail --retry 3 -o libraries/liblwjgl.so \
+            https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/libraries/liblwjgl.so
+
+          curl -L --fail --retry 3 -o libraries/gl4es.wasm \
+            https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/libraries/gl4es.wasm
+
+          test -s lwjgl/lwjgl-2.9.3.jar
+          test -s lwjgl/lwjgl_util-2.9.3.jar
+          test -s libraries/liblwjgl.so
+          test -s libraries/gl4es.wasm
+
+      - name: Commit LWJGL files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lwjgl libraries
+          git diff --cached --quiet || git commit -m "Add LWJGL browser runtime [lwjgl]"
+          git push
