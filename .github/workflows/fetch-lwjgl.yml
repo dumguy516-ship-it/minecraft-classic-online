@@ -24,12 +24,6 @@ jobs:
 
           curl -L --fail --retry 3 -o lwjgl/lwjgl_util-2.9.3.jar             https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/lwjgl_util-2.9.9.jar ||           curl -L --fail --retry 3 -o lwjgl/lwjgl_util-2.9.3.jar             https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/lwjgl_util-2.9.3.jar
 
-          curl -L --fail --retry 3 -o lwjgl/libraries/liblwjgl.so             https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/libraries/liblwjgl.so
-
-          curl -L --fail --retry 3 -o lwjgl/libraries/gl4es.wasm             https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/libraries/gl4es.wasm
-
-          curl -L --fail --retry 3 -o lwjgl/libraries/lwjgl.js             https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/libraries/lwjgl.js
-
       - name: Build browser game JAR
         run: |
           set -e
