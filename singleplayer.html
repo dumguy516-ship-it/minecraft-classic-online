@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Minecraft Classic Online — Single Player</title>
+<link rel="stylesheet" href="style.css" onerror="this.remove()">
+<script src="https://cjrtnc.leaningtech.com/4.3/loader.js"></script>
+<style>
+html,body{margin:0;padding:0;background:#111;color:#ddd;font-family:Arial,Helvetica,sans-serif;height:100%;overflow:hidden}
+#top{height:55px;min-width:900px;background:#252525 url("top-bg.png") repeat-x;position:relative;border-bottom:3px solid #0a0a0a;box-sizing:border-box}
+.top-inner{height:52px;position:relative;margin:auto}
+.top-inner a{color:#aaa0d8}.top-inner a:hover{color:#fff}
+.small-logo{height:42px;width:auto;margin:5px 0 0 14px}.stats{position:absolute;left:294px;top:7px;font-size:14px;line-height:15px}.account{position:absolute;right:12px;top:14px;font-size:18px}
+#game-wrap{position:absolute;left:0;right:0;top:58px;bottom:0;background:#000;display:flex;align-items:center;justify-content:center}
+#lwjgl{display:block;width:min(100vw,1280px);height:min(calc(100vh - 58px),720px);background:#000;image-rendering:auto}
+#status{position:absolute;left:10px;bottom:10px;background:rgba(0,0,0,.75);padding:8px 10px;font-size:12px;color:#bbb;z-index:5;max-width:650px}
+#back{position:absolute;left:12px;top:68px;z-index:6;color:#aaa0d8;background:#111;border:1px solid #444;padding:5px 8px;text-decoration:none;font-size:13px}
+#back:hover{color:#fff}
+</style>
+</head>
+<body>
+<div id="top"><div class="top-inner">
+<a href="index.html"><img src="logo_small.png" class="small-logo" alt="Minecraft"></a>
+<div class="stats">Single player<div><a href="index.html">Home</a>, <a href="servers.html">Multi player</a>, <a href="levels.html">Levels</a></div></div>
+<div class="account">Minecraft Classic 0.30</div>
+</div></div>
+<a id="back" href="index.html">&lt; Back to Minecraft Classic Online</a>
+<div id="game-wrap"><canvas id="lwjgl" width="1024" height="640"></canvas></div>
+<div id="status">Starting the original Minecraft Classic 0.30 client…</div>
+
+<cheerpj-applet archive="client.jar" code="com.mojang.minecraft.MinecraftApplet" width="1024" height="640">
+</cheerpj-applet>
+
+<script type="module">
+const status=document.getElementById('status');
+const canvas=document.getElementById('lwjgl');
+window.lwjglCanvasElement=canvas;
+try {
+  status.textContent='Starting CheerpJ…';
+  await cheerpjInit({
+    javaProperties:['java.library.path=/app/cheerpj-natives/natives']
+  });
+  status.textContent='Java runtime ready. Starting Minecraft Classic 0.30…';
+} catch(e) {
+  status.textContent='Could not start the Java runtime: '+(e?.message||e);
+  console.error(e);
+}
+</script>
+</body>
+</html>
