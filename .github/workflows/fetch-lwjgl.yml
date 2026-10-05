@@ -15,7 +15,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download LWJGL files
+      - name: Download LWJGL browser runtime
         run: |
           set -e
           mkdir -p lwjgl/libraries
@@ -32,23 +32,69 @@ jobs:
           curl -L --fail --retry 3 -o lwjgl/libraries/gl4es.wasm \
             https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/libraries/gl4es.wasm
 
-      - name: Build merged browser JAR
+      - name: Build browser game JAR
         run: |
           set -e
-          rm -rf build client-browser.jar
-          mkdir build
-          cd build
+          rm -rf build launcher-src client-browser.jar
+          mkdir -p build launcher-src
 
+          cat > launcher-src/BrowserLauncher.java <<'EOF'
+          package com.mojang.minecraft;
+
+          import java.net.MalformedURLException;
+          import java.net.URL;
+
+          public final class BrowserLauncher extends MinecraftApplet {
+              private static final int WIDTH = 854;
+              private static final int HEIGHT = 480;
+
+              @Override
+              public String getParameter(String name) {
+                  return null;
+              }
+
+              @Override
+              public URL getDocumentBase() {
+                  try {
+                      return new URL("https://dumguy516-ship-it.github.io/minecraft-classic-online/");
+                  } catch (MalformedURLException e) {
+                      throw new RuntimeException(e);
+                  }
+              }
+
+              @Override
+              public int getWidth() {
+                  return WIDTH;
+              }
+
+              @Override
+              public int getHeight() {
+                  return HEIGHT;
+              }
+
+              public static void main(String[] args) {
+                  BrowserLauncher applet = new BrowserLauncher();
+                  applet.init();
+                  applet.startGameThread();
+              }
+          }
+          EOF
+
+          javac -source 8 -target 8 -cp client.jar:lwjgl/lwjgl-2.9.3.jar:lwjgl/lwjgl_util-2.9.3.jar \
+            -d launcher-src launcher-src/BrowserLauncher.java
+
+          cd build
           jar xf ../client.jar
           jar xf ../lwjgl/lwjgl-2.9.3.jar
           jar xf ../lwjgl/lwjgl_util-2.9.3.jar
-
+          cp ../launcher-src/com/mojang/minecraft/BrowserLauncher.class com/mojang/minecraft/
           rm -f META-INF/*.SF META-INF/*.RSA META-INF/*.DSA 2>/dev/null || true
-
           jar cf ../client-browser.jar .
+          cd ..
 
-          test -s ../client-browser.jar
-          jar tf ../client-browser.jar | grep -q '^org/lwjgl/BufferUtils.class$'
+          test -s client-browser.jar
+          jar tf client-browser.jar | grep -q '^org/lwjgl/BufferUtils.class$'
+          jar tf client-browser.jar | grep -q '^com/mojang/minecraft/BrowserLauncher.class$'
 
       - name: Commit browser runtime
         run: |
@@ -59,5 +105,5 @@ jobs:
             echo "Browser runtime is already up to date."
             exit 0
           fi
-          git commit -m "Add merged browser Minecraft client [lwjgl]"
+          git commit -m "Add browser launcher for Minecraft [lwjgl]"
           git push
