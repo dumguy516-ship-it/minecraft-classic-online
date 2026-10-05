@@ -77,11 +77,6 @@
         #error p {
             margin: 8px 0;
         }
-
-        #error pre {
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
     </style>
 </head>
 
@@ -98,15 +93,13 @@
 </div>
 
 <div id="game">
-
     <cheerpj-applet
-        archive="client.jar,lwjgl/lwjgl-2.9.3.jar,lwjgl/lwjgl_util-2.9.3.jar"
+        archive="client-browser.jar"
         code="com.mojang.minecraft.MinecraftApplet"
         width="854"
         height="480">
         Minecraft Classic requires Java.
     </cheerpj-applet>
-
 </div>
 
 <script>
@@ -116,11 +109,6 @@
     const errorText = document.getElementById("error-text");
 
     try {
-        /*
-         * Minecraft Classic uses the old LWJGL 2 API.
-         * These settings provide the browser-compatible LWJGL
-         * native implementation used by CheerpJ/Browsercraft.
-         */
         await cheerpjInit({
             version: 8,
 
@@ -129,15 +117,13 @@
             ],
 
             libraries: {
-                "libGL.so.1": "/app/libraries/gl4es.wasm",
-                "liblwjgl.so": "/app/libraries/liblwjgl.so"
+                "libGL.so.1": "/app/libraries/gl4es.wasm"
             },
 
             enableX11: true
         });
 
         loading.classList.add("hidden");
-
     } catch (err) {
         console.error("Minecraft failed to start:", err);
 
