@@ -9,6 +9,7 @@ permissions:
 
 jobs:
   fetch-lwjgl:
+    if: "!contains(github.event.head_commit.message, '[lwjgl]')"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -31,17 +32,32 @@ jobs:
           curl -L --fail --retry 3 -o lwjgl/libraries/gl4es.wasm \
             https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/libraries/gl4es.wasm
 
-          curl -L --fail --retry 3 -o lwjgl/libraries/lwjgl.js \
-            https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/libraries/lwjgl.js
+      - name: Build merged browser JAR
+        run: |
+          set -e
+          rm -rf build client-browser.jar
+          mkdir build
+          cd build
 
-      - name: Commit downloaded files
+          jar xf ../client.jar
+          jar xf ../lwjgl/lwjgl-2.9.3.jar
+          jar xf ../lwjgl/lwjgl_util-2.9.3.jar
+
+          rm -f META-INF/*.SF META-INF/*.RSA META-INF/*.DSA 2>/dev/null || true
+
+          jar cf ../client-browser.jar .
+
+          test -s ../client-browser.jar
+          jar tf ../client-browser.jar | grep -q '^org/lwjgl/BufferUtils.class$'
+
+      - name: Commit browser runtime
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add lwjgl
+          git add lwjgl client-browser.jar
           if git diff --cached --quiet; then
-            echo "LWJGL files are already up to date."
+            echo "Browser runtime is already up to date."
             exit 0
           fi
-          git commit -m "Add browser LWJGL runtime"
+          git commit -m "Add merged browser Minecraft client [lwjgl]"
           git push
