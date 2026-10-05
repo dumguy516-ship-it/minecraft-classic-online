@@ -100,11 +100,11 @@
             version: 8,
 
             javaProperties: [
-                "java.library.path=/app/lwjgl/libraries/"
+                "java.library.path=/app/minecraft-classic-online/lwjgl/libraries/"
             ],
 
             libraries: {
-                "libGL.so.1": "/app/lwjgl/libraries/gl4es.wasm"
+                "libGL.so.1": "/app/minecraft-classic-online/lwjgl/libraries/gl4es.wasm"
             },
 
             enableX11: true
@@ -116,7 +116,7 @@
 
         const exitCode = await cheerpjRunMain(
             "com.mojang.minecraft.BrowserLauncher",
-            "/app/client-browser.jar"
+            "/app/minecraft-classic-online/client-browser.jar"
         );
 
         console.log("Minecraft exited with code:", exitCode);
