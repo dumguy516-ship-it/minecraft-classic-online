@@ -22,7 +22,14 @@ jobs:
 
           curl -L --fail --retry 3 -o lwjgl/lwjgl-2.9.3.jar             https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/lwjgl-2.9.3.jar
 
-          curl -L --fail --retry 3 -o lwjgl/lwjgl_util-2.9.3.jar             https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/lwjgl_util-2.9.9.jar ||           curl -L --fail --retry 3 -o lwjgl/lwjgl_util-2.9.3.jar             https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/lwjgl_util-2.9.3.jar
+          curl -L --fail --retry 3 -o lwjgl/lwjgl_util-2.9.3.jar \
+            https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/lwjgl_util-2.9.3.jar
+
+          curl -L --fail --retry 3 -o lwjgl/libraries/lwjgl.js \
+            https://raw.githubusercontent.com/leaningtech/cheerpj-natives/main/natives/lwjgl.js
+
+          curl -L --fail --retry 3 -o lwjgl/libraries/jawt.js \
+            https://raw.githubusercontent.com/leaningtech/cheerpj-natives/main/natives/jawt.js
 
       - name: Build browser game JAR
         run: |
