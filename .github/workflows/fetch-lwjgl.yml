@@ -31,6 +31,9 @@ jobs:
           curl -L --fail --retry 3 -o lwjgl/libraries/jawt.js \
             https://raw.githubusercontent.com/leaningtech/cheerpj-natives/main/natives/jawt.js
 
+          curl -L --fail --retry 3 -o lwjgl/libraries/gl4es.wasm \
+            https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/libraries/gl4es.wasm
+
       - name: Build browser game JAR
         run: |
           set -e
