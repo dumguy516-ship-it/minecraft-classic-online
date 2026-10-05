@@ -16,7 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download LWJGL runtime files
+      - name: Download LWJGL browser runtime
         run: |
           mkdir -p lwjgl libraries
 
@@ -37,10 +37,28 @@ jobs:
           test -s libraries/liblwjgl.so
           test -s libraries/gl4es.wasm
 
-      - name: Commit LWJGL files
+      - name: Build one browser game JAR
+        run: |
+          rm -rf build
+          mkdir -p build
+
+          cd build
+          jar xf ../client.jar
+          jar xf ../lwjgl/lwjgl-2.9.3.jar
+          jar xf ../lwjgl/lwjgl_util-2.9.3.jar
+
+          rm -f META-INF/*.SF META-INF/*.RSA META-INF/*.DSA 2>/dev/null || true
+
+          jar cf ../client-browser.jar .
+          cd ..
+
+          test -s client-browser.jar
+          jar tf client-browser.jar | grep -q '^org/lwjgl/BufferUtils.class$'
+
+      - name: Commit browser runtime
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add lwjgl libraries
-          git diff --cached --quiet || git commit -m "Add LWJGL browser runtime [lwjgl]"
+          git add lwjgl libraries client-browser.jar
+          git diff --cached --quiet || git commit -m "Build browser Minecraft client [lwjgl]"
           git push
