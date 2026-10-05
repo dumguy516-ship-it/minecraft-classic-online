@@ -56,8 +56,9 @@ jobs:
                       false
                   );
 
-                  minecraft.i = "localhost";
-                  minecraft.k = true;
+                  // Classic's k flag is network/client mode; false keeps the
+                  // original local singleplayer level path active.
+                  minecraft.k = false;
 
                   Thread thread = new Thread(minecraft);
                   thread.setName("Minecraft");
