@@ -39,16 +39,15 @@
         await cheerpjInit({
             version: 8,
             javaProperties: [
-                "java.library.path=" + appRoot + "/lwjgl/libraries/"
+                "java.library.path=" + appRoot + "/lwjgl/libraries"
             ],
-            libraries: {
-                "libGL.so.1": appRoot + "/lwjgl/libraries/gl4es.wasm",
-                "liblwjgl.so": appRoot + "/lwjgl/libraries/liblwjgl.so"
-            },
             enableX11: true
         });
 
         await cheerpjCreateDisplay(854, 480, display);
+        const lwjglCanvas = display.querySelector("canvas");
+        if (!lwjglCanvas) throw new Error("CheerpJ display canvas was not created");
+        window.lwjglCanvasElement = lwjglCanvas;
         loading.classList.add("hidden");
 
         const exitCode = await cheerpjRunMain(
