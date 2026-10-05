@@ -6,88 +6,25 @@
     <title>Minecraft Classic - Single Player</title>
     <script src="https://cjrtnc.leaningtech.com/4.3/loader.js"></script>
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: #000;
-        }
-
-        #game {
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #000;
-        }
-
-        #display {
-            width: 854px;
-            height: 480px;
-        }
-
-        #loading {
-            position: fixed;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            background: #000;
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 16px;
-            z-index: 10;
-        }
-
-        #loading.hidden {
-            display: none;
-        }
-
-        #error {
-            display: none;
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            width: 650px;
-            max-width: 90%;
-            padding: 20px;
-            box-sizing: border-box;
-            color: white;
-            background: #222;
-            border: 1px solid #555;
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 14px;
-            z-index: 20;
-        }
-
-        #error h1 {
-            margin: 0 0 12px 0;
-            font-size: 20px;
-        }
-
-        #error p {
-            margin: 8px 0;
-        }
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
+        #game { width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; background: #000; }
+        #display { width: 854px; height: 480px; }
+        #loading { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; color: white; background: #000; font-family: Arial, Helvetica, sans-serif; font-size: 16px; z-index: 10; }
+        #loading.hidden { display: none; }
+        #error { display: none; position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 650px; max-width: 90%; padding: 20px; box-sizing: border-box; color: white; background: #222; border: 1px solid #555; font-family: Arial, Helvetica, sans-serif; font-size: 14px; z-index: 20; }
+        #error h1 { margin: 0 0 12px 0; font-size: 20px; }
+        #error p { margin: 8px 0; }
     </style>
-    <!-- Direct LWJGL launcher build v2 -->
+    <!-- Direct LWJGL launcher build v3 -->
 </head>
-
 <body>
 <div id="loading">Loading Minecraft Classic...</div>
-
 <div id="error">
     <h1>Minecraft could not start</h1>
     <p id="error-text">The Java runtime failed to start Minecraft.</p>
     <p>Open the browser console if this message remains.</p>
 </div>
-
-<div id="game">
-    <div id="display"></div>
-</div>
+<div id="game"><div id="display"></div></div>
 
 <script>
 (async function () {
@@ -97,37 +34,33 @@
     const display = document.getElementById("display");
 
     try {
+        const appRoot = "/app/minecraft-classic-online";
+
         await cheerpjInit({
             version: 8,
-
             javaProperties: [
-                "java.library.path=/app/minecraft-classic-online/lwjgl/libraries/"
+                "java.library.path=" + appRoot + "/lwjgl/libraries/"
             ],
-
             libraries: {
-                "libGL.so.1": "/app/minecraft-classic-online/lwjgl/libraries/gl4es.wasm"
+                "libGL.so.1": appRoot + "/lwjgl/libraries/gl4es.wasm",
+                "liblwjgl.so": appRoot + "/lwjgl/libraries/liblwjgl.so"
             },
-
             enableX11: true
         });
 
         await cheerpjCreateDisplay(854, 480, display);
-
         loading.classList.add("hidden");
 
         const exitCode = await cheerpjRunMain(
             "com.mojang.minecraft.BrowserLauncher",
-            "/app/minecraft-classic-online/client-browser.jar"
+            appRoot + "/client-browser.jar"
         );
 
         console.log("Minecraft exited with code:", exitCode);
-
     } catch (err) {
         console.error("Minecraft failed to start:", err);
-
         loading.classList.add("hidden");
         error.style.display = "block";
-
         errorText.textContent =
             "Minecraft could not start: " +
             (err && err.message ? err.message : String(err));
