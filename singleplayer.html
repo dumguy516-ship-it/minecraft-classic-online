@@ -41,6 +41,9 @@
             javaProperties: [
                 "java.library.path=" + appRoot + "/lwjgl/libraries"
             ],
+            libraries: {
+                "libGL.so.1": appRoot + "/lwjgl/libraries/gl4es.wasm"
+            },
             enableX11: true
         });
 
