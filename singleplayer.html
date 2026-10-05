@@ -3,14 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Minecraft Classic - Single Player</title>
-
     <script src="https://cjrtnc.leaningtech.com/4.3/loader.js"></script>
-
     <style>
-        html,
-        body {
+        html, body {
             margin: 0;
             padding: 0;
             width: 100%;
@@ -28,8 +24,7 @@
             background: #000;
         }
 
-        cheerpj-applet {
-            display: block;
+        #display {
             width: 854px;
             height: 480px;
         }
@@ -81,10 +76,7 @@
 </head>
 
 <body>
-
-<div id="loading">
-    Loading Minecraft Classic...
-</div>
+<div id="loading">Loading Minecraft Classic...</div>
 
 <div id="error">
     <h1>Minecraft could not start</h1>
@@ -93,13 +85,7 @@
 </div>
 
 <div id="game">
-    <cheerpj-applet
-        archive="client-browser.jar"
-        code="com.mojang.minecraft.MinecraftApplet"
-        width="854"
-        height="480">
-        Minecraft Classic requires Java.
-    </cheerpj-applet>
+    <div id="display"></div>
 </div>
 
 <script>
@@ -107,6 +93,7 @@
     const loading = document.getElementById("loading");
     const error = document.getElementById("error");
     const errorText = document.getElementById("error-text");
+    const display = document.getElementById("display");
 
     try {
         await cheerpjInit({
@@ -123,7 +110,17 @@
             enableX11: true
         });
 
+        await cheerpjCreateDisplay(854, 480, display);
+
         loading.classList.add("hidden");
+
+        const exitCode = await cheerpjRunMain(
+            "com.mojang.minecraft.BrowserLauncher",
+            "/app/client-browser.jar"
+        );
+
+        console.log("Minecraft exited with code:", exitCode);
+
     } catch (err) {
         console.error("Minecraft failed to start:", err);
 
@@ -131,11 +128,10 @@
         error.style.display = "block";
 
         errorText.textContent =
-            "CheerpJ could not initialize: " +
+            "Minecraft could not start: " +
             (err && err.message ? err.message : String(err));
     }
 })();
 </script>
-
 </body>
 </html>
