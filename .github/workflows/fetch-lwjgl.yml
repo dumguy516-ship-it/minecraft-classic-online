@@ -20,17 +20,13 @@ jobs:
           set -e
           mkdir -p lwjgl/libraries
 
-          curl -L --fail --retry 3 -o lwjgl/lwjgl-2.9.3.jar \
-            https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/lwjgl-2.9.3.jar
+          curl -L --fail --retry 3 -o lwjgl/lwjgl-2.9.3.jar             https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/lwjgl-2.9.3.jar
 
-          curl -L --fail --retry 3 -o lwjgl/lwjgl_util-2.9.3.jar \
-            https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/lwjgl_util-2.9.3.jar
+          curl -L --fail --retry 3 -o lwjgl/lwjgl_util-2.9.3.jar             https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/lwjgl_util-2.9.3.jar
 
-          curl -L --fail --retry 3 -o lwjgl/libraries/liblwjgl.so \
-            https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/libraries/liblwjgl.so
+          curl -L --fail --retry 3 -o lwjgl/libraries/liblwjgl.so             https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/libraries/liblwjgl.so
 
-          curl -L --fail --retry 3 -o lwjgl/libraries/gl4es.wasm \
-            https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/libraries/gl4es.wasm
+          curl -L --fail --retry 3 -o lwjgl/libraries/gl4es.wasm             https://raw.githubusercontent.com/leaningtech/browsercraft/main/static/lwjgl/libraries/gl4es.wasm
 
       - name: Build browser game JAR
         run: |
@@ -41,47 +37,35 @@ jobs:
           cat > launcher-src/BrowserLauncher.java <<'EOF'
           package com.mojang.minecraft;
 
-          import java.net.MalformedURLException;
-          import java.net.URL;
+          import java.awt.Canvas;
 
-          public final class BrowserLauncher extends MinecraftApplet {
+          public final class BrowserLauncher {
               private static final int WIDTH = 854;
               private static final int HEIGHT = 480;
 
-              @Override
-              public String getParameter(String name) {
-                  return null;
-              }
-
-              @Override
-              public URL getDocumentBase() {
-                  try {
-                      return new URL("https://dumguy516-ship-it.github.io/minecraft-classic-online/");
-                  } catch (MalformedURLException e) {
-                      throw new RuntimeException(e);
-                  }
-              }
-
-              @Override
-              public int getWidth() {
-                  return WIDTH;
-              }
-
-              @Override
-              public int getHeight() {
-                  return HEIGHT;
-              }
-
               public static void main(String[] args) {
-                  BrowserLauncher applet = new BrowserLauncher();
-                  applet.init();
-                  applet.startGameThread();
+                  Canvas canvas = new Canvas();
+                  canvas.setFocusable(true);
+
+                  l minecraft = new l(
+                      canvas,
+                      null,
+                      WIDTH,
+                      HEIGHT,
+                      false
+                  );
+
+                  minecraft.i = "localhost";
+                  minecraft.k = true;
+
+                  Thread thread = new Thread(minecraft);
+                  thread.setName("Minecraft");
+                  thread.start();
               }
           }
           EOF
 
-          javac -source 8 -target 8 -cp client.jar:lwjgl/lwjgl-2.9.3.jar:lwjgl/lwjgl_util-2.9.3.jar \
-            -d launcher-src launcher-src/BrowserLauncher.java
+          javac -source 8 -target 8 -cp client.jar:lwjgl/lwjgl-2.9.3.jar:lwjgl/lwjgl_util-2.9.3.jar             -d launcher-src launcher-src/BrowserLauncher.java
 
           cd build
           jar xf ../client.jar
@@ -105,5 +89,5 @@ jobs:
             echo "Browser runtime is already up to date."
             exit 0
           fi
-          git commit -m "Add browser launcher for Minecraft [lwjgl]"
+          git commit -m "Use direct Minecraft launcher without applet [lwjgl]"
           git push
